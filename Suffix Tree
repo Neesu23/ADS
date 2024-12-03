@@ -1,0 +1,94 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <string>
+using namespace std;
+
+// Node structure for the suffix tree
+class SuffixTreeNode {
+public:
+    unordered_map<char, SuffixTreeNode*> children;
+    int start;
+    int* end;
+    int suffixIndex;
+
+    SuffixTreeNode(int start, int* end) : start(start), end(end), suffixIndex(-1) {}
+};
+
+// Class to build a suffix tree
+class SuffixTree {
+private:
+    string text;
+    SuffixTreeNode* root;
+    int size;
+
+    void buildTree() {
+        int n = text.size();
+        int* end = new int(-1);
+        root = new SuffixTreeNode(-1, end);
+        SuffixTreeNode* currentNode = root;
+        int remainingSuffixCount = 0;
+        int lastNewNode = -1;
+        int currentEnd = -1;
+        int i = 0;
+
+        for (int i = 0; i < n; i++) {
+            currentEnd = i;
+            remainingSuffixCount++;
+            lastNewNode = -1;
+
+            while (remainingSuffixCount > 0) {
+                if (currentNode->children.find(text[i]) == currentNode->children.end()) {
+                    currentNode->children[text[i]] = new SuffixTreeNode(i, new int(currentEnd));
+                    if (lastNewNode != -1) {
+                        lastNewNode->suffixIndex = i;
+                        lastNewNode = -1;
+                    }
+                } else {
+                    SuffixTreeNode* nextNode = currentNode->children[text[i]];
+                    if (nextNode->start < i) {
+                        currentNode = nextNode;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+public:
+    SuffixTree(string inputText) : text(inputText) {
+        size = text.size();
+        buildTree();
+    }
+
+    void printTree(SuffixTreeNode* node) {
+        if (node == nullptr) return;
+        if (node->suffixIndex != -1) {
+            cout << "Leaf at index " << node->suffixIndex << " with substring: ";
+            for (int i = node->start; i < *node->end; i++) {
+                cout << text[i];
+            }
+            cout << endl;
+        }
+        for (auto child : node->children) {
+            printTree(child.second);
+        }
+    }
+
+    void display() {
+        printTree(root);
+    }
+};
+
+int main() {
+    string inputText;
+    cout << "Enter a string to build the suffix tree: ";
+    cin >> inputText;
+
+    SuffixTree suffixTree(inputText);
+    cout << "Suffix Tree:
+";
+    suffixTree.display();
+
+    return 0;
+}
