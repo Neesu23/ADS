@@ -1,0 +1,81 @@
+#include <iostream>
+using namespace std; // Use the standard namespace
+
+// Function to swap two elements
+void swap(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+// Function to generate a pseudo-random number without <cstdlib>
+int customRandom(int min, int max) {
+    static unsigned int seed = 12345; // Fixed seed value
+    seed = (214013 * seed + 2531011); // Linear congruential generator
+    return min + (seed ^ (seed >> 15)) % (max - min + 1);
+}
+
+// RANDOMIZED-PARTITION function
+int randomizedPartition(int arr[], int p, int r, int &comparisonCount) {
+    int randomPivotIndex = p + customRandom(0, r - p);
+    swap(arr[randomPivotIndex], arr[r]); // Move random pivot to end
+
+    int pivot = arr[r];
+    int i = p - 1;
+
+    for (int j = p; j < r; j++) {
+        comparisonCount++;
+        if (arr[j] <= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[r]);
+    return i + 1;
+}
+
+// RANDOMIZED-QUICKSORT function
+void randomizedQuickSort(int arr[], int p, int r, int &comparisonCount) {
+    if (p < r) {
+        int q = randomizedPartition(arr, p, r, comparisonCount);
+        randomizedQuickSort(arr, p, q - 1, comparisonCount);
+        randomizedQuickSort(arr, q + 1, r, comparisonCount);
+    }
+}
+
+int main() {
+    int n;
+    cout << "Enter the number of elements in the array: ";
+    cin >> n;
+
+    int arr[n];
+    cout << "Enter the elements of the array: ";
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    int comparisonCount = 0;
+    randomizedQuickSort(arr, 0, n - 1, comparisonCount);
+
+    cout << "Sorted array: ";
+    for (int i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    cout << "Number of comparisons: " << comparisonCount << endl;
+
+    return 0;
+}
+
+
+
+
+Algorithm: 
+The algorithm RANDOMIZED-QUICKSORT works by partitioning the array A, and recursively
+sorts both partitions.
+RANDOMIZED-QUICKSORT(A, p, r)
+1 if p < r
+2 then q ← RANDOMIZED-PARTITION(A, p, r)
+3 RANDOMIZED-QUICKSORT(A, p, q − 1)
+4 RANDOMIZED-QUICKSORT(A, q + 1, r)
