@@ -1,0 +1,92 @@
+#include <iostream>
+#include <cstdlib>
+using namespace std; // Use the standard namespace
+
+// Function to swap two elements
+void swap(int &a, int &b) {
+    int temp = a;
+    a = b;
+    b = temp;
+}
+
+// RANDOMIZED-PARTITION function
+int randomizedPartition(int arr[], int p, int r) {
+    int i = p + rand() % (r - p + 1); // Randomly select a pivot index
+    swap(arr[p], arr[i]); // Swap pivot with the first element
+    return partition(arr, p, r); // Call the partition function
+}
+
+// PARTITION function
+int partition(int arr[], int p, int r) {
+    int pivot = arr[p];
+    int i = p;
+    for (int j = p + 1; j <= r; j++) {
+        if (arr[j] <= pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+        }
+    }
+    swap(arr[p], arr[i]);
+    return i;
+}
+
+// RANDOMIZED-SELECT function
+int randomizedSelect(int arr[], int p, int r, int i) {
+    if (p == r) {
+        return arr[p];
+    }
+
+    int q = randomizedPartition(arr, p, r);
+    int k = q - p + 1;
+
+    if (i == k) { // The pivot value is the ith smallest element
+        return arr[q];
+    } else if (i < k) {
+        return randomizedSelect(arr, p, q, i); // Search in the left part
+    } else {
+        return randomizedSelect(arr, q + 1, r, i - k); // Search in the right part
+    }
+}
+
+int main() {
+    int n, i;
+    cout << "Enter the number of elements in the array: ";
+    cin >> n;
+
+    int arr[n];
+    cout << "Enter the elements of the array: ";
+    for (int j = 0; j < n; j++) {
+        cin >> arr[j];
+    }
+
+    cout << "Enter the value of i (to find the ith smallest element): ";
+    cin >> i;
+
+    if (i < 1 || i > n) {
+        cout << "Invalid value of i. It must be between 1 and " << n << "." << endl;
+        return 1;
+    }
+
+    int ithSmallest = randomizedSelect(arr, 0, n - 1, i);
+    cout << "The " << i << "th smallest element is: " << ithSmallest << endl;
+
+    return 0;
+}
+
+
+
+
+
+Algorithm:
+RANDOMIZED-SELECT(A, p, r, i)
+1 if p = r
+2 then return A[p]
+3 q ← RANDOMIZED-PARTITION(A, p, r)
+4 k ← q − p + 1
+5 if i ≤ k
+6 then return RANDOMIZED-SELECT(A, p, q, i)
+7 else return RANDOMIZED-SELECT(A, q + 1, r, i − k)
+RANDOMIZED-PARTITION(A, p, r)
+1 i ← RANDOM(p, r)
+2 exchange A[p] ↔ A[i]
+3 return PARTITION(A, p, r)
