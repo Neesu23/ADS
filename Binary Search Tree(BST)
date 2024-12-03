@@ -1,0 +1,100 @@
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int key;
+    Node *left, *right;
+
+    Node(int item) {
+        key = item;
+        left = right = nullptr;
+    }
+};
+
+class BinaryTree {
+public:
+    Node *root;
+
+    BinaryTree() {
+        root = nullptr;
+    }
+
+    void insert(int key) {
+        root = insertRec(root, key);
+    }
+
+    Node* search(int key) {
+        return searchRec(root, key);
+    }
+
+    void inorder() {
+        inorderRec(root);
+    }
+
+private:
+    Node* insertRec(Node* root, int key) {
+        if (root == nullptr) {
+            root = new Node(key);
+            return root;
+        }
+
+        if (key < root->key) {
+            root->left = insertRec(root->left, key);
+        } else if (key > root->key) {
+            root->right = insertRec(root->right, key);
+        }
+
+        return root;
+    }
+
+    Node* searchRec(Node* root, int key) {
+        if (root == nullptr || root->key == key) {
+            return root;
+        }
+
+        if (key < root->key) {
+            return searchRec(root->left, key);
+        }
+
+        return searchRec(root->right, key);
+    }
+
+    void inorderRec(Node* root) {
+        if (root != nullptr) {
+            inorderRec(root->left);
+            cout << root->key << " ";
+            inorderRec(root->right);
+        }
+    }
+};
+
+int main() {
+    BinaryTree tree;
+    tree.insert(50);
+    tree.insert(30);
+    tree.insert(20);
+    tree.insert(40);
+    tree.insert(70);
+    tree.insert(60);
+    tree.insert(80);
+
+    cout << "Inorder traversal of the given tree: ";
+    tree.inorder();
+
+    int key = 60;
+    if (tree.search(key) != nullptr) {
+        cout << "\nNode " << key << " found in the tree." << endl;
+    } else {
+        cout << "\nNode " << key << " not found in the tree." << endl;
+    }
+
+    key = 25;
+    if (tree.search(key) != nullptr) {
+        cout << "Node " << key << " found in the tree." << endl;
+    } else {
+        cout << "Node " << key << " not found in the tree." << endl;
+    }
+
+    return 0;
+}
